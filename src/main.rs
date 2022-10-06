@@ -1,21 +1,17 @@
 use crate::tokenizer::separate;
+use std::fs;
+use std::thread::sleep;
+use std::time::Duration;
 
 mod tokenizer;
 
 fn main() {
-    let program_test = String::from("fn fibonacci(n) {
-        if(n == 0 or n == 1) {
-            return n
-        }
-        else(True) {
-            return fibonacci(n - 1) + fibonacci(n - 2)
-        }
-        return 1
-    }");
+    let program_test = fs::read_to_string("C:/Users/Oem/PycharmProjects/Tokenizer/src/test")
+        .expect("Should have been able to read the file");
 
-    let token_list: Vec<String> = vec![];
-
-    for element in token_list {
-        println!("{}", element);
+    for element in separate(program_test).0.split_whitespace() {
+        if !element.contains(" ") {
+            print!("{} ", element);
+        }
     }
 }

@@ -11,7 +11,7 @@ impl Extract for Option<char> {
     }
 }
 
-pub fn separate(mut input_string: String) -> () {
+pub fn separate(mut input_string: String) -> (String, Vec<usize>) {
 
     let possible_separators: Vec<char> = "~!@#$%^&*()-=+;:'\"|<>?/".chars().collect();
     let absolute_separators: Vec<char> = "()[]{};:'\",.".chars().collect();
@@ -21,7 +21,6 @@ pub fn separate(mut input_string: String) -> () {
     let mut line: usize = 0;
 
     let mut line_number_list: Vec<usize> = vec![];
-    let mut output: String = String::new();
 
     while i < input_string.len() {
 
@@ -30,7 +29,7 @@ pub fn separate(mut input_string: String) -> () {
             line += 1;
 
             let input_slice: &str = &input_string[beginning..i];
-            let input_split_vec: Vec<&str> = input_slice.split(" ").collect();
+            let input_split_vec: Vec<&str> = input_slice.split_whitespace().collect();
             let tokens_in_line: usize = input_split_vec.len();
 
             beginning = i + 1;
@@ -42,20 +41,28 @@ pub fn separate(mut input_string: String) -> () {
 
         if absolute_separators.contains(&input_string.chars().nth(i).get()) {
 
-            let input_slice: &str = &input_string[beginning..i];
-
-            let output_slice: &str = &format!("{} {} {}", &input_slice[..i], &input_slice[i..i + 1], &input_slice[i + 1..]);
+            input_string.insert(i,' ');
             i += 2;
+            input_string.insert(i,' ');
+
         }
 
-        if possible_separators.contains(&input_string.chars().nth(i).get()) && ! possible_separators.contains(&input_string.chars().nth(i).get()) {
+        if possible_separators.contains(&input_string.chars().nth(i).get()) && ! possible_separators.contains(&input_string.chars().nth(i - 1).get()) {
 
-            let input_slice: &str = &input_string[beginning..i];
-
-            let output_slice: &str = &format!("{} {}", &input_slice[..i + 1], &input_slice[i + 1..]);
+            input_string.insert(i, ' ');
             i += 1;
+
         }
+
+        if possible_separators.contains(&input_string.chars().nth(i).get()) && ! possible_separators.contains(&input_string.chars().nth(i + 1).get()) {
+
+            input_string.insert(i + 1, ' ');
+            i += 1;
+
+        }
+
+        i += 1;
     }
 
-    return ();
+    return (input_string, line_number_list);
 }
