@@ -1,3 +1,10 @@
+use std::iter::zip;
+
+pub struct Token {
+    pub token_name: String,
+    pub line_number: usize
+}
+
 pub trait Extract {
     fn get(&self) -> char;
 }
@@ -11,7 +18,19 @@ impl Extract for Option<char> {
     }
 }
 
-pub fn separate(mut input_string: String) -> (String, Vec<usize>) {
+fn combine(token_string: String, token_line_numbers: Vec<usize>) -> Vec<Token> {
+    let mut output_vec: Vec<Token> = vec![];
+
+    let token_names: Vec<String> = token_string.split_whitespace().map(String::from).collect();
+
+    for (name, line) in zip(token_names, token_line_numbers) {
+        output_vec.push(Token{token_name: name, line_number: line});
+    }
+
+    return output_vec;
+}
+
+pub fn separate(mut input_string: String) -> Vec<Token> {
 
     let possible_separators: Vec<char> = "~!@#$%^&*()-=+;:'\"|<>?/".chars().collect();
     let absolute_separators: Vec<char> = "()[]{};:'\",.".chars().collect();
@@ -25,7 +44,6 @@ pub fn separate(mut input_string: String) -> (String, Vec<usize>) {
     while i < input_string.len() {
 
         if input_string.chars().nth(i) == Some('\n') {
-
             line += 1;
 
             let input_slice: &str = &input_string[beginning..i];
@@ -39,30 +57,26 @@ pub fn separate(mut input_string: String) -> (String, Vec<usize>) {
             }
         }
 
-        if absolute_separators.contains(&input_string.chars().nth(i).get()) {
-
+        if absolute_separators.contains(&input_string.chars().nth(i).unwrap()) {
             input_string.insert(i,' ');
             i += 2;
             input_string.insert(i,' ');
-
         }
 
-        if possible_separators.contains(&input_string.chars().nth(i).get()) && ! possible_separators.contains(&input_string.chars().nth(i - 1).get()) {
-
+        if possible_separators.contains(&input_string.chars().nth(i).unwrap()) &&
+                ! possible_separators.contains(&input_string.chars().nth(i - 1).unwrap()) {
             input_string.insert(i, ' ');
             i += 1;
-
         }
 
-        if possible_separators.contains(&input_string.chars().nth(i).get()) && ! possible_separators.contains(&input_string.chars().nth(i + 1).get()) {
-
+        if possible_separators.contains(&input_string.chars().nth(i).unwrap()) &&
+                ! possible_separators.contains(&input_string.chars().nth(i + 1).unwrap()) {
             input_string.insert(i + 1, ' ');
             i += 1;
-
         }
 
         i += 1;
     }
 
-    return (input_string, line_number_list);
+    return combine(input_string, line_number_list);
 }
