@@ -5,19 +5,6 @@ pub struct Token {
     pub line_number: usize
 }
 
-pub trait Extract {
-    fn get(&self) -> char;
-}
-
-impl Extract for Option<char> {
-    fn get(&self) -> char {
-        match self {
-            Some(x) => *x,
-            None => ' '
-        }
-    }
-}
-
 fn combine(token_string: String, token_line_numbers: Vec<usize>) -> Vec<Token> {
     let mut output_vec: Vec<Token> = vec![];
 
@@ -52,25 +39,46 @@ pub fn separate(mut input_string: String) -> Vec<Token> {
 
             beginning = i + 1;
 
-            for n in 0..tokens_in_line {
+            for _ in 0..tokens_in_line {
                 line_number_list.push(line);
             }
         }
 
-        if absolute_separators.contains(&input_string.chars().nth(i).unwrap()) {
+        if absolute_separators.contains(
+            &input_string
+                .chars()
+                .nth(i)
+                .unwrap()) {
+
             input_string.insert(i,' ');
             i += 2;
             input_string.insert(i,' ');
         }
 
-        if possible_separators.contains(&input_string.chars().nth(i).unwrap()) &&
-                ! possible_separators.contains(&input_string.chars().nth(i - 1).unwrap()) {
+        if possible_separators.contains(
+            &input_string
+                .chars()
+                .nth(i)
+                .unwrap()) && ! possible_separators.contains(
+            &input_string
+                .chars()
+                .nth(i - 1)
+                .unwrap()) {
+
             input_string.insert(i, ' ');
             i += 1;
         }
 
-        if possible_separators.contains(&input_string.chars().nth(i).unwrap()) &&
-                ! possible_separators.contains(&input_string.chars().nth(i + 1).unwrap()) {
+        if possible_separators.contains(
+            &input_string
+                .chars()
+                .nth(i)
+                .unwrap()) && ! possible_separators.contains(
+            &input_string
+                .chars()
+                .nth(i + 1)
+                .unwrap()) {
+
             input_string.insert(i + 1, ' ');
             i += 1;
         }
