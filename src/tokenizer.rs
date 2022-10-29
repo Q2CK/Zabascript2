@@ -2,16 +2,30 @@ use std::iter::zip;
 
 pub struct Token {
     pub token_name: String,
-    pub line_number: usize
+    pub line_number: usize,
+    pub handled: bool
+}
+
+impl Token {
+    pub fn new(token_name: String, line_number: usize) -> Token {
+        Token {
+            token_name,
+            line_number,
+            handled: false
+        }
+    }
 }
 
 fn combine(token_string: String, token_line_numbers: Vec<usize>) -> Vec<Token> {
     let mut output_vec: Vec<Token> = vec![];
 
-    let token_names: Vec<String> = token_string.split_whitespace().map(String::from).collect();
+    let token_names: Vec<String> = token_string
+        .split_whitespace()
+        .map(String::from)
+        .collect();
 
     for (name, line) in zip(token_names, token_line_numbers) {
-        output_vec.push(Token{token_name: name, line_number: line});
+        output_vec.push(Token::new(name, line));
     }
 
     return output_vec;
